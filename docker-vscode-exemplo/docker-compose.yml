@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  # Aplicação Node.js
+  app:
+    build: .
+    container_name: minha-app
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    restart: unless-stopped
+
+  # Banco de dados PostgreSQL
+  db:
+    image: postgres:15-alpine
+    container_name: minha-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=devuser
+      - POSTGRES_PASSWORD=devpass
+      - POSTGRES_DB=meudb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

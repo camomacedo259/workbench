@@ -1,0 +1,22 @@
+{
+  "MyFolder": {
+    "Type": "Folder",
+    "Job1_Extract": {
+      "Type": "Job:Command",
+      "Command": "echo \"Extracting...\"",
+      "RunAs": "workbench",
+      "Host": "localhost"
+    },
+    "Job2_Transform": {
+      "Type": "Job:Command",
+      "Command": "echo \"Transforming...\"",
+      "RunAs": "workbench",
+      "Host": "localhost",
+      "When": {
+        "JobSucceeded": {
+          "JobName": "Job1_Extract"
+        }
+      }
+    }
+  }
+}

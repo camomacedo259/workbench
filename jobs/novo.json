@@ -1,0 +1,22 @@
+{
+  "MyFolder": {
+    "Type": "Folder",
+    "novo": {
+      "Type": "Job:Command",
+      "Command": "echo 'Este é um novo job criado no Workbench!'",
+      "RunAs": "workbench",
+      "Host": "localhost",
+      "When": {
+        "RuleBasedCalendars": {
+          "Included": [
+            {
+              "Name": "Weekdays"
+            }
+          ]
+        },
+        "FromTime": "0800",
+        "ToTime": "1700"
+      }
+    }
+  }
+}

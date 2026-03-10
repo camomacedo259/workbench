@@ -1,0 +1,23 @@
+{
+  "name": "docker-vscode-exemplo",
+  "version": "1.0.0",
+  "description": "Exemplo de integração Docker com VS Code",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [
+    "docker",
+    "node",
+    "vscode"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}

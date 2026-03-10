@@ -1,0 +1,75 @@
+{
+  "Control-M Simple Job": {
+    "prefix": "ctm-job",
+    "body": [
+      "{",
+      "  \"${1:FolderName}\": {",
+      "    \"Type\": \"Folder\",",
+      "    \"${2:JobName}\": {",
+      "      \"Type\": \"Job:Command\",",
+      "      \"Command\": \"${3:echo 'Hello World'}\",",
+      "      \"RunAs\": \"${4:workbench}\",",
+      "      \"Host\": \"${5:localhost}\"",
+      "    }",
+      "  }",
+      "}"
+    ],
+    "description": "Cria um job simples do Control-M"
+  },
+  "Control-M Scheduled Job": {
+    "prefix": "ctm-job-schedule",
+    "body": [
+      "{",
+      "  \"${1:FolderName}\": {",
+      "    \"Type\": \"Folder\",",
+      "    \"${2:JobName}\": {",
+      "      \"Type\": \"Job:Command\",",
+      "      \"Command\": \"${3:echo 'Scheduled job'}\",",
+      "      \"RunAs\": \"${4:workbench}\",",
+      "      \"Host\": \"${5:localhost}\",",
+      "      \"When\": {",
+      "        \"RuleBasedCalendars\": {",
+      "          \"Included\": [",
+      "            {",
+      "              \"Name\": \"${6:Weekdays}\"",
+      "            }",
+      "          ]",
+      "        },",
+      "        \"FromTime\": \"${7:0800}\",",
+      "        \"ToTime\": \"${8:1700}\"",
+      "      }",
+      "    }",
+      "  }",
+      "}"
+    ],
+    "description": "Job com agendamento"
+  },
+  "Control-M Flow Jobs": {
+    "prefix": "ctm-flow",
+    "body": [
+      "{",
+      "  \"${1:FolderName}\": {",
+      "    \"Type\": \"Folder\",",
+      "    \"${2:Job1}\": {",
+      "      \"Type\": \"Job:Command\",",
+      "      \"Command\": \"${3:echo 'Job 1'}\",",
+      "      \"RunAs\": \"${4:workbench}\",",
+      "      \"Host\": \"${5:localhost}\"",
+      "    },",
+      "    \"${6:Job2}\": {",
+      "      \"Type\": \"Job:Command\",",
+      "      \"Command\": \"${7:echo 'Job 2'}\",",
+      "      \"RunAs\": \"${8:workbench}\",",
+      "      \"Host\": \"${9:localhost}\",",
+      "      \"When\": {",
+      "        \"JobSucceeded\": {",
+      "          \"JobName\": \"${2:Job1}\"",
+      "        }",
+      "      }",
+      "    }",
+      "  }",
+      "}"
+    ],
+    "description": "Flow de jobs com dependência"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "ExampleFolder": {
+    "Type": "Folder",
+    "HelloWorld": {
+      "Type": "Job:Command",
+      "Command": "echo 'Hello from Control-M!'",
+      "RunAs": "workbench",
+      "Host": "localhost"
+    },
+    "DateTimeJob": {
+      "Type": "Job:Command",
+      "Command": "date",
+      "RunAs": "workbench",
+      "Host": "localhost"
+    },
+    "SystemInfo": {
+      "Type": "Job:Command",
+      "Command": "uname -a",
+      "RunAs": "workbench",
+      "Host": "localhost"
+    }
+  }
+}

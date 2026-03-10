@@ -1,0 +1,11 @@
+.github/**
+.vscode/**
+.vscode-test/**
+.idea/**
+node_modules/**
+src/**
+out/test/**
+*.vsix
+*.log
+*.tsbuildinfo
+coverage/**

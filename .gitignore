@@ -1,0 +1,26 @@
+# Imagens Docker do Control-M (arquivos grandes)
+/controlm-workbench-*
+/ctm-cli.tgz
+
+# Imagem Docker dentro da extensão
+extension/assets/docker/
+
+# Logs
+*.log
+podman-*.log
+
+# PDFs e arquivos temporários
+*.pdf
+
+# Pasta node_modules (gerida pelo extension/.gitignore)
+extension/node_modules/
+
+# Arquivos de build da extensão
+extension/dist/
+extension/out/
+extension/*.vsix
+extension/.vscode-test/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,314 @@
+{
+  "name": "control-m-workbench-manager",
+  "displayName": "Control-M Workbench Manager",
+  "description": "Gerenciar Container Control-M Workbench e Deploy de Jobs diretamente do VS Code",
+  "version": "1.0.11",
+  "publisher": "controlm-workbench",
+  "repository": "https://marketplace.visualstudio.com/items?itemName=controlm-workbench.control-m-workbench-manager",
+  "engines": {
+    "vscode": "^1.70.0"
+  },
+  "categories": [
+    "Other",
+    "Snippets"
+  ],
+  "keywords": [
+    "control-m",
+    "workbench",
+    "docker",
+    "automation",
+    "jobs"
+  ],
+  "icon": "assets/icon.png",
+  "activationEvents": [
+    "onCommand:ctm-workbench.setupDockerImage",
+    "onCommand:ctm-workbench.status",
+    "onCommand:ctm-workbench.start",
+    "onCommand:ctm-workbench.stop",
+    "onCommand:ctm-job.openDeployWeb",
+    "onCommand:ctm-job.openMonitorWeb",
+    "onCommand:ctm-workbench.open",
+    "onView:ctm-workbench-explorer"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "ctm-workbench.setupDockerImage",
+        "title": "Setup Docker Image do Workbench",
+        "category": "Control-M"
+      },
+      {
+        "command": "ctm-workbench.status",
+        "title": "Ver Status do Workbench",
+        "category": "Control-M"
+      },
+      {
+        "command": "ctm-workbench.start",
+        "title": "Iniciar Workbench",
+        "category": "Control-M"
+      },
+      {
+        "command": "ctm-workbench.stop",
+        "title": "Parar Workbench",
+        "category": "Control-M"
+      },
+      {
+        "command": "ctm-workbench.restart",
+        "title": "Reiniciar Workbench",
+        "category": "Control-M"
+      },
+      {
+        "command": "ctm-workbench.unpause",
+        "title": "Despausar Workbench",
+        "category": "Control-M"
+      },
+      {
+        "command": "ctm-workbench.open",
+        "title": "Abrir Workbench",
+        "category": "Control-M"
+      },
+      {
+        "command": "ctm-workbench.logs",
+        "title": "Ver Logs do Workbench",
+        "category": "Control-M"
+      },
+      {
+        "command": "ctm-workbench.backup",
+        "title": "Criar Backup do Workbench",
+        "category": "Control-M"
+      },
+      {
+        "command": "ctm-job.create",
+        "title": "Criar Novo Job",
+        "category": "Control-M"
+      },
+      {
+        "command": "ctm-job.validate",
+        "title": "Validar Job",
+        "category": "Control-M"
+      },
+      {
+        "command": "ctm-job.deploy",
+        "title": "Deploy Job",
+        "category": "Control-M"
+      },
+      {
+        "command": "ctm-job.openDeployWeb",
+        "title": "Abrir Deploy na Web",
+        "category": "Control-M",
+        "icon": "$(globe)"
+      },
+      {
+        "command": "ctm-job.openMonitorWeb",
+        "title": "Abrir Monitor na Web",
+        "category": "Control-M",
+        "icon": "$(graph)"
+      },
+      {
+        "command": "ctm-job.build",
+        "title": "Build Job",
+        "category": "Control-M"
+      },
+      {
+        "command": "ctm-job.run",
+        "title": "Executar Job",
+        "category": "Control-M"
+      },
+      {
+        "command": "ctm-job.validateFile",
+        "title": "Validar Job",
+        "category": "Control-M",
+        "icon": "$(check)"
+      },
+      {
+        "command": "ctm-job.deployFile",
+        "title": "Deploy Job",
+        "category": "Control-M",
+        "icon": "$(cloud-upload)"
+      },
+      {
+        "command": "ctm-job.runFile",
+        "title": "Executar Job",
+        "category": "Control-M",
+        "icon": "$(play)"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "ctm-explorer",
+          "title": "Control-M",
+          "icon": "assets/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "ctm-explorer": [
+        {
+          "id": "ctm-workbench-explorer",
+          "name": "Workbench Status",
+          "when": "config.ctm-workbench.enabled"
+        },
+        {
+          "id": "ctm-jobs-explorer",
+          "name": "Jobs",
+          "when": "config.ctm-workbench.enabled"
+        },
+        {
+          "id": "ctm-commands-explorer",
+          "name": "Atalhos",
+          "when": "config.ctm-workbench.enabled"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "ctm-job.openDeployWeb",
+          "when": "view == ctm-jobs-explorer",
+          "group": "navigation@1"
+        },
+        {
+          "command": "ctm-job.openMonitorWeb",
+          "when": "view == ctm-jobs-explorer",
+          "group": "navigation@2"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "ctm-job.validateFile",
+          "when": "view == ctm-jobs-explorer && viewItem == jobFile",
+          "group": "ctm@1"
+        },
+        {
+          "command": "ctm-job.deployFile",
+          "when": "view == ctm-jobs-explorer && viewItem == jobFile",
+          "group": "ctm@2"
+        },
+        {
+          "command": "ctm-job.runFile",
+          "when": "view == ctm-jobs-explorer && viewItem == jobFile",
+          "group": "ctm@3"
+        }
+      ],
+      "view/item/inline": [
+        {
+          "command": "ctm-job.deployFile",
+          "when": "view == ctm-jobs-explorer && viewItem == jobFile",
+          "group": "inline@1"
+        },
+        {
+          "command": "ctm-job.runFile",
+          "when": "view == ctm-jobs-explorer && viewItem == jobFile",
+          "group": "inline@2"
+        }
+      ]
+    },
+    "statusBar": [
+      {
+        "id": "ctm-workbench-status",
+        "alignment": "left",
+        "priority": 100
+      }
+    ],
+    "configuration": {
+      "title": "Control-M Workbench",
+      "properties": {
+        "ctm-workbench.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Habilitar extensão Control-M Workbench"
+        },
+        "ctm-workbench.containerName": {
+          "type": "string",
+          "default": "workbench",
+          "description": "Nome do container Docker"
+        },
+        "ctm-workbench.imageName": {
+          "type": "string",
+          "default": "controlm-workbench:9.19.200",
+          "description": "Nome da imagem Docker do Workbench"
+        },
+        "ctm-workbench.bundledImageRelativePath": {
+          "type": "string",
+          "default": "assets/docker/controlm-workbench-9.19.200.tar.gz",
+          "description": "Caminho relativo (na extensao) do arquivo de imagem offline (.tar, .tar.gz, .tar.xz, .xz)"
+        },
+        "ctm-workbench.bundledCtmCliRelativePath": {
+          "type": "string",
+          "default": "assets/tools/ctm-cli.tgz",
+          "description": "Caminho relativo (na extensao) do pacote ctm-cli offline (.tgz)"
+        },
+        "ctm-workbench.automationApiUrl": {
+          "type": "string",
+          "default": "https://localhost:8443/automation-api",
+          "description": "URL base da Automation API usada para abrir web e configurar ctm environment"
+        },
+        "ctm-workbench.monitorWebUrl": {
+          "type": "string",
+          "default": "https://localhost:8443/SelfService",
+          "description": "URL do monitor web (Self Service) aberta pelo atalho de monitor"
+        },
+        "ctm-workbench.scriptPath": {
+          "type": "string",
+          "default": "./Workbench/scripts",
+          "description": "Caminho para scripts PowerShell"
+        },
+        "ctm-workbench.jobsPath": {
+          "type": "string",
+          "default": "./Workbench/jobs",
+          "description": "Caminho para pasta de jobs"
+        },
+        "ctm-workbench.autoRefresh": {
+          "type": "boolean",
+          "default": true,
+          "description": "Atualizar status automaticamente"
+        },
+        "ctm-workbench.refreshInterval": {
+          "type": "number",
+          "default": 30000,
+          "description": "Intervalo de atualização em millisegundos"
+        }
+      }
+    },
+    "snippets": [
+      {
+        "language": "json",
+        "path": "./snippets/control-m.json"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "ctm-job.openMonitorWeb",
+        "key": "ctrl+shift+m",
+        "when": "editorTextFocus || view == ctm-jobs-explorer"
+      }
+    ]
+  },
+  "scripts": {
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
+    "esbuild": "npm run esbuild-base -- --sourcemap",
+    "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
+    "esbuild-prod": "npm run esbuild-base -- --minify",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.70.0",
+    "@types/glob": "^7.2.0",
+    "@types/mocha": "^9.1.1",
+    "@types/node": "^18.0.0",
+    "eslint": "^8.19.0",
+    "@typescript-eslint/eslint-plugin": "^5.30.0",
+    "@typescript-eslint/parser": "^5.30.0",
+    "glob": "^8.0.3",
+    "mocha": "^10.0.0",
+    "typescript": "^4.7.4",
+    "esbuild": "^0.15.0"
+  },
+  "dependencies": {}
+}
