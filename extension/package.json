@@ -230,6 +230,11 @@
           "default": "controlm-workbench:9.19.200",
           "description": "Nome da imagem Docker do Workbench"
         },
+        "ctm-workbench.imageDownloadUrl": {
+          "type": "string",
+          "default": "https://github.com/camomacedo259/workbench/releases/download/v1.0.0/controlm-workbench-9.19.200.xz",
+          "description": "URL para download da imagem Docker do Workbench (GitHub Releases)"
+        },
         "ctm-workbench.bundledImageRelativePath": {
           "type": "string",
           "default": "assets/docker/controlm-workbench-9.19.200.tar.gz",

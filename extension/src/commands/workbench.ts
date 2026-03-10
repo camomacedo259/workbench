@@ -2,7 +2,12 @@ import * as vscode from "vscode";
 import { execSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
+import * as https from "https";
 import { StatusBarManager } from "../ui/statusBar";
+
+const GITHUB_RELEASE_IMAGE_URL =
+  "https://github.com/camomacedo259/workbench/releases/download/v1.0.0/controlm-workbench-9.19.200.xz";
+const IMAGE_FILENAME = "controlm-workbench-9.19.200.xz";
 
 export class WorkbenchCommands {
   constructor(
@@ -25,36 +30,133 @@ export class WorkbenchCommands {
       return;
     }
 
+    // Tenta carregar imagem já em disco (bundled ou caminho configurado)
     const bundledImage = this.findBundledImage();
-    const terminal = vscode.window.createTerminal("Control-M Setup Container");
-
     if (bundledImage) {
-      const loadCmds = this.buildLoadCommands(runtime, bundledImage);
-      for (const cmd of loadCmds) {
-        terminal.sendText(cmd);
-      }
-      terminal.sendText(`${runtime} image ls "${imageName}"`);
-      terminal.show();
-      vscode.window.showInformationMessage(
-        `📦 Carregando imagem empacotada: ${path.basename(bundledImage)}`,
-      );
+      this.loadImageIntoRuntime(runtime, bundledImage, imageName);
       return;
     }
 
-    const configuredRelative =
-      this.config.get<string>("bundledImageRelativePath") ||
-      "assets/docker/controlm-workbench-9.19.200.tar.gz";
-    const configuredAbsolute = path.join(
-      this.extensionPath,
-      configuredRelative,
-    );
-    const dockerAssetsDir = path.join(this.extensionPath, "assets", "docker");
+    // Imagem não encontrada — oferece download do GitHub Releases
+    const downloadUrl =
+      this.config.get<string>("imageDownloadUrl") || GITHUB_RELEASE_IMAGE_URL;
+    const destDir = path.join(this.extensionPath, "assets", "docker");
+    const destFile = path.join(destDir, IMAGE_FILENAME);
 
-    vscode.window.showErrorMessage(
-      `❌ Imagem compactada do Workbench não foi encontrada dentro da extensão. ` +
-        `Esta instalação está em modo offline (sem download). ` +
-        `Verifique o arquivo em: ${configuredAbsolute} ou em ${dockerAssetsDir}.`,
+    const choice = await vscode.window.showInformationMessage(
+      `📦 A imagem do Control-M Workbench não foi encontrada localmente.\n` +
+        `Deseja baixar automaticamente do GitHub Releases? (~1 GB)`,
+      "Baixar Agora",
+      "Escolher Arquivo Local",
+      "Cancelar",
     );
+
+    if (choice === "Cancelar" || !choice) {
+      return;
+    }
+
+    if (choice === "Escolher Arquivo Local") {
+      const selected = await vscode.window.showOpenDialog({
+        canSelectFiles: true,
+        canSelectFolders: false,
+        canSelectMany: false,
+        filters: { "Imagem Docker": ["xz", "tar", "gz"] },
+        title: "Selecione a imagem do Control-M Workbench",
+      });
+      if (!selected || selected.length === 0) return;
+      this.loadImageIntoRuntime(runtime, selected[0].fsPath, imageName);
+      return;
+    }
+
+    // Opção: Baixar Agora
+    if (!fs.existsSync(destDir)) {
+      fs.mkdirSync(destDir, { recursive: true });
+    }
+
+    await vscode.window.withProgress(
+      {
+        location: vscode.ProgressLocation.Notification,
+        title: "⬇️ Baixando imagem Control-M Workbench...",
+        cancellable: false,
+      },
+      async (progress) => {
+        try {
+          await this.downloadFile(downloadUrl, destFile, (pct) => {
+            progress.report({ message: `${pct}%`, increment: 0 });
+          });
+          vscode.window.showInformationMessage(
+            `✅ Download concluído! Carregando imagem...`,
+          );
+          this.loadImageIntoRuntime(runtime, destFile, imageName);
+        } catch (err) {
+          vscode.window.showErrorMessage(
+            `❌ Erro no download: ${err}\n\nBaixe manualmente em: ${downloadUrl}`,
+          );
+        }
+      },
+    );
+  }
+
+  private loadImageIntoRuntime(
+    runtime: string,
+    imagePath: string,
+    imageName: string,
+  ) {
+    const terminal = vscode.window.createTerminal("Control-M Setup Container");
+    const loadCmds = this.buildLoadCommands(runtime, imagePath);
+    for (const cmd of loadCmds) {
+      terminal.sendText(cmd);
+    }
+    terminal.sendText(`${runtime} image ls "${imageName}"`);
+    terminal.show();
+    vscode.window.showInformationMessage(
+      `📦 Carregando imagem: ${path.basename(imagePath)}`,
+    );
+  }
+
+  private downloadFile(
+    url: string,
+    dest: string,
+    onProgress: (pct: number) => void,
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const follow = (currentUrl: string) => {
+        const lib = currentUrl.startsWith("https") ? https : require("http");
+        lib
+          .get(currentUrl, (res: import("http").IncomingMessage) => {
+            if (
+              res.statusCode &&
+              res.statusCode >= 300 &&
+              res.statusCode < 400 &&
+              res.headers.location
+            ) {
+              follow(res.headers.location);
+              return;
+            }
+            if (res.statusCode !== 200) {
+              reject(new Error(`HTTP ${res.statusCode}`));
+              return;
+            }
+            const total = parseInt(res.headers["content-length"] || "0", 10);
+            let received = 0;
+            const file = fs.createWriteStream(dest);
+            res.on("data", (chunk: Buffer) => {
+              received += chunk.length;
+              if (total > 0) {
+                onProgress(Math.round((received / total) * 100));
+              }
+            });
+            res.pipe(file);
+            file.on("finish", () => file.close(() => resolve()));
+            file.on("error", (err) => {
+              fs.unlink(dest, () => undefined);
+              reject(err);
+            });
+          })
+          .on("error", reject);
+      };
+      follow(url);
+    });
   }
 
   async status() {
